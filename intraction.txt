@@ -1,0 +1,374 @@
+# Mongoose + TypeScript Project Setup: From Scratch (English and Bengali)
+
+## English Guide
+
+### 1. Initialize the Project
+```bash
+mkdir my-mongoose-ts-app
+cd my-mongoose-ts-app
+npm init -y
+```
+
+Update `package.json`:
+```json
+"main": "./dist/server.js",
+```
+
+### 2. Install Core Dependencies
+```bash
+npm install express cors dotenv mongoose
+```
+
+### 3. Install Development Dependencies
+```bash
+npm install -D typescript ts-node-dev @types/express @types/node eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
+### 4. Set Up TypeScript Configuration
+```bash
+npx tsc --init
+```
+
+Update `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+### 5. Set Up Express Application
+Create `src/app.ts`:
+```typescript
+import express, { Request, Response } from 'express';
+
+const app = express();
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello World!');
+});
+
+export default app;
+```
+
+### 6. Create the Server File
+Create `src/server.ts`:
+```typescript
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import app from './app';
+import config from './config';
+
+dotenv.config();
+
+const port = config.port || 3000;
+
+async function main() {
+  try {
+    await mongoose.connect(config.db_url);
+    console.log('Database connected successfully!');
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+      console.log(`Access it at: http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Database connection error:', error);
+    process.exit(1);
+  }
+}
+
+main();
+```
+
+### 7. Create Configuration File
+Create `src/config/index.ts`:
+```typescript
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const config = {
+  port: process.env.PORT || 3000,
+  db_url: process.env.DB_URL || ''
+};
+
+export default config;
+```
+
+### 8. Create .env File
+Create `.env`:
+```
+PORT=3000
+DB_URL=mongodb://localhost:27017/mydb
+```
+
+### 9. Add Development Script to package.json
+Update `package.json`:
+```json
+"scripts": {
+  "start:dev": "ts-node-dev --respawn --transpile-only ./src/server.ts"
+}
+```
+
+### 10. Run the Project
+```bash
+npm run start:dev
+```
+
+### 11. Set Up ESLint (Optional)
+Create `eslint.config.mjs`:
+```javascript
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import globals from 'globals';
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
+  },
+  {
+    rules: {
+      "no-unused-vars": "error",
+      "no-undef": "error",
+      "prefer-const": "error",
+      "no-console": "warn"
+    }
+  }
+);
+```
+
+### 12. Nodemon and tsc Watch (Optional)
+```bash
+npm install -D nodemon
+```
+
+Run in a separate terminal:
+```bash
+tsc -w
+```
+
+## বাংলা গাইড
+
+### ১. প্রজেক্ট শুরু করা
+```bash
+mkdir my-mongoose-ts-app
+cd my-mongoose-ts-app
+npm init -y
+```
+
+`package.json` আপডেট করুন:
+```json
+"main": "./dist/server.js",
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ধাপে আমরা প্রজেক্টের জন্য একটি নতুন ডিরেক্টরি তৈরি করি এবং npm দিয়ে প্রজেক্ট ইনিশিয়ালাইজ করি। `mkdir` কমান্ড নতুন ফোল্ডার তৈরি করে, `cd` আমাদের সেই ফোল্ডারে নিয়ে যায়, এবং `npm init -y` একটি ডিফল্ট `package.json` ফাইল তৈরি করে, যা প্রজেক্টের মেটাডেটা এবং ডিপেনডেন্সি ধারণ করে। `package.json`-এ `"main"` ফিল্ড পরিবর্তন করা হয়েছে যাতে Node.js জানে প্রজেক্টের প্রধান এন্ট্রি পয়েন্ট কোনটি। যেহেতু আমরা TypeScript ব্যবহার করছি, তাই কম্পাইল করা JavaScript ফাইল `dist/server.js`-এ থাকবে।
+
+### ২. প্রাথমিক ডিপেনডেন্সি ইনস্টল করা
+```bash
+npm install express cors dotenv mongoose
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ধাপে আমরা প্রজেক্টের কোর ফাংশনালিটির জন্য প্রয়োজনীয় লাইব্রেরি ইনস্টল করি। `express` ওয়েব সার্ভার তৈরি করতে, `cors` ফ্রন্টএন্ড থেকে API অ্যাক্সেসের জন্য, `dotenv` এনভায়রনমেন্ট ভেরিয়েবল ম্যানেজ করতে, এবং `mongoose` MongoDB-এর সাথে সংযোগ এবং ডেটা মডেলিংয়ের জন্য ব্যবহৃত হয়। এই প্যাকেজগুলো অ্যাপ্লিকেশন চালানোর জন্য অপরিহার্য।
+
+### ৩. ডেভেলপমেন্ট ডিপেনডেন্সি ইনস্টল করা
+```bash
+npm install -D typescript ts-node-dev @types/express @types/node eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ধাপে আমরা শুধুমাত্র ডেভেলপমেন্টের সময় প্রয়োজনীয় টুল ইনস্টল করি। `typescript` কোড কম্পাইল করতে, `ts-node-dev` ডেভেলপমেন্টে দ্রুত ফিডব্যাকের জন্য, `@types/express` এবং `@types/node` TypeScript-এর টাইপ সাপোর্টের জন্য, এবং `eslint` কোডের গুণগত মান নিশ্চিত করতে ব্যবহৃত হয়। এই প্যাকেজগুলো প্রোডাকশনে যায় না, কিন্তু ডেভেলপমেন্ট প্রক্রিয়াকে সহজ করে।
+
+### ৪. TypeScript কনফিগারেশন তৈরি করা
+```bash
+npx tsc --init
+```
+
+`tsconfig.json` আপডেট করুন:
+```json
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
+
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+TypeScript কম্পাইলারকে সঠিকভাবে কনফিগার করতে `tsconfig.json` ফাইল প্রয়োজন। এটি নির্দেশ করে কোথায় সোর্স কোড আছে (`src`), কম্পাইল করা ফাইল কোথায় যাবে (`dist`), এবং কীভাবে TypeScript কোড JavaScript-এ রূপান্তরিত হবে। `strict` মোড টাইপ নিরাপত্তা বাড়ায়, এবং অন্যান্য সেটিংস Node.js-এর সাথে সামঞ্জস্য নিশ্চিত করে।
+
+### ৫. Express অ্যাপ সেটআপ
+`src/app.ts` ফাইল তৈরি করুন:
+```typescript
+import express, { Request, Response } from 'express';
+
+// Express অ্যাপ্লিকেশন ইনস্ট্যান্স তৈরি
+const app = express();
+
+// '/' রুটে GET রিকোয়েস্ট হ্যান্ডেল করা
+app.get('/', (req: Request, res: Response) => {
+  // ক্লায়েন্টকে 'Hello World!' মেসেজ পাঠানো
+  res.send('Hello World!');
+});
+
+// অন্য ফাইল থেকে অ্যাক্সেসের জন্য app এক্সপোর্ট
+export default app;
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ফাইলটি আমাদের ওয়েব অ্যাপ্লিকেশনের মূল কাঠামো তৈরি করে। Express ব্যবহার করে আমরা একটি সার্ভার তৈরি করি যা HTTP রিকোয়েস্ট গ্রহণ করে এবং রেসপন্স পাঠায়। এখানে একটি সাধারণ রুট ('/') তৈরি করা হয়েছে যা "Hello World!" রিটার্ন করে। এই ফাইলটি মডুলার করার জন্য `app` এক্সপোর্ট করা হয়েছে।
+
+### ৬. সার্ভার ফাইল তৈরি করা
+`src/server.ts` ফাইল তৈরি করুন:
+```typescript
+import mongoose from 'mongoose'; // MongoDB সংযোগের জন্য Mongoose
+import dotenv from 'dotenv'; // .env ফাইল থেকে পরিবেশ ভেরিয়েবল লোড
+import app from './app'; // Express অ্যাপ ইম্পোর্ট
+import config from './config'; // কনফিগারেশন সেটিংস
+
+dotenv.config(); // .env ফাইল থেকে ভেরিয়েবল লোড
+
+const port = config.port || 3000; // পোর্ট সেট, না থাকলে 3000
+
+// ডাটাবেস সংযোগ এবং সার্ভার শুরু
+async function main() {
+  try {
+    // MongoDB-এর সাথে সংযোগ
+    await mongoose.connect(config.db_url);
+    console.log('Database connected successfully!'); // সফল সংযোগ বার্তা
+    // সার্ভার শুরু
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`); // সার্ভার চলছে
+      console.log(`Access it at: http://localhost:${port}`); // অ্যাক্সেস URL
+    });
+  } catch (error) {
+    // ডাটাবেস সংযোগে ত্রুটি
+    console.error('Database connection error:', error);
+    process.exit(1); // ত্রুটির কারণে অ্যাপ বন্ধ
+  }
+}
+
+main(); // ফাংশন কল
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ফাইলটি অ্যাপ্লিকেশনের প্রধান এন্ট্রি পয়েন্ট। এটি MongoDB-এর সাথে সংযোগ স্থাপন করে, Express সার্ভার শুরু করে, এবং ত্রুটি হ্যান্ডলিং করে। `dotenv.config()` এনভায়রনমেন্ট ভেরিয়েবল লোড করে, এবং `async/await` ব্যবহার করে ডাটাবেস সংযোগের অ্যাসিনক্রোনাস প্রকৃতি ম্যানেজ করা হয়।
+
+### ৭. কনফিগারেশন ফাইল তৈরি করা
+`src/config/index.ts` ফাইল তৈরি করুন:
+```typescript
+import dotenv from 'dotenv';
+
+// এনভায়রনমেন্ট ভেরিয়েবল লোড
+dotenv.config();
+
+const config = {
+  port: process.env.PORT || 3000, // পোর্ট না থাকলে 3000
+  db_url: process.env.DB_URL || '' // DB URL না থাকলে খালি
+};
+
+export default config;
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই ফাইলটি অ্যাপ্লিকেশনের সেটিংস (পোর্ট, ডাটাবেস URL) এক জায়গায় সংরক্ষণ করে, যা বিভিন্ন পরিবেশে (ডেভেলপমেন্ট, প্রোডাকশন) সহজে ব্যবহার করা যায়। `dotenv` এনভায়রনমেন্ট ভেরিয়েবল লোড করে, এবং `config` অবজেক্টটি অন্য ফাইলে ব্যবহারের জন্য এক্সপোর্ট করা হয়।
+
+### ৮. .env ফাইল তৈরি করা
+`.env` ফাইল তৈরি করুন:
+```
+PORT=3000
+DB_URL=mongodb://localhost:27017/mydb
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+`.env` ফাইল সংবেদনশীল তথ্য (যেমন পোর্ট, ডাটাবেস URL) সংরক্ষণ করে। এটি গিটহাবে আপলোড করা উচিত নয়। এই ফাইলটি সার্ভারের পোর্ট এবং MongoDB সংযোগ স্ট্রিং ধারণ করে।
+
+### ৯. package.json স্ক্রিপ্টে dev server যুক্ত করা
+`package.json`-এ যোগ করুন:
+```json
+"scripts": {
+  "start:dev": "ts-node-dev --respawn --transpile-only ./src/server.ts"
+}
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই স্ক্রিপ্টটি ডেভেলপমেন্টের সময় সার্ভার চালানোর জন্য একটি সহজ কমান্ড প্রদান করে। `ts-node-dev` TypeScript ফাইল সরাসরি চালায় এবং কোড পরিবর্তনের সাথে সাথে সার্ভার রিস্টার্ট করে, যা ডেভেলপমেন্ট প্রক্রিয়াকে দ্রুত করে।
+
+### ১০. প্রজেক্ট রান করা
+```bash
+npm run start:dev
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+এই কমান্ডটি প্রজেক্ট চালায়, যা ডাটাবেসের সাথে সংযোগ করে এবং সার্ভার শুরু করে। সফলভাবে চললে ব্রাউজারে `http://localhost:3000`-এ "Hello World!" দেখা যাবে।
+
+### ১১. ESLint সেটআপ (ঐচ্ছিক)
+`eslint.config.mjs` ফাইল তৈরি করুন:
+```javascript
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import globals from 'globals';
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
+  },
+  {
+    rules: {
+      "no-unused-vars": "error",
+      "no-undef": "error",
+      "prefer-const": "error",
+      "no-console": "warn"
+    }
+  }
+);
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+ESLint কোডের মান বজায় রাখে এবং ত্রুটি ধরে। এই কনফিগারেশন JavaScript এবং TypeScript-এর জন্য প্রস্তাবিত নিয়ম সেট করে এবং কাস্টম নিয়ম (যেমন `no-unused-vars`, `prefer-const`) যোগ করে কোড পরিষ্কার রাখে।
+
+### ১২. Nodemon ও tsc Watch (ঐচ্ছিক)
+```bash
+npm install -D nodemon
+```
+
+আলাদা টার্মিনালে:
+```bash
+tsc -w
+```
+
+**// কেন এই ধাপটি লেখা হয়েছে**:  
+`nodemon` কোড পরিবর্তনের সাথে সাথে সার্ভার রিস্টার্ট করে, এবং `tsc -w` TypeScript ফাইল স্বয়ংক্রিয়ভাবে কম্পাইল করে। এই টুলগুলো ডেভেলপমেন্ট প্রক্রিয়াকে আরও দ্রুত ও সুবিধাজনক করে।
+
+---
+
+এই গাইডটি ইংরেজি এবং বাংলায় লেখা হয়েছে যাতে দুই ভাষার ব্যবহারকারীরা সহজে বুঝতে পারেন। বাংলায় কমেন্ট রাখা হয়েছে কোডের প্রতিটি লাইনের কাজ বোঝানোর জন্য, এবং প্রতিটি ধাপের শেষে বর্ণনা দেওয়া হয়েছে যাতে এটি কেন গুরুত্বপূর্ণ তা স্পষ্ট হয়। ইংরেজি সংস্করণে কমেন্ট বাদ দেওয়া হয়েছে যাতে এটি সংক্ষিপ্ত এবং পরিষ্কার থাকে।
