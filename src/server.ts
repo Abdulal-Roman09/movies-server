@@ -21,7 +21,7 @@ async function main() {
   } catch (error) {
     // ডাটাবেস সংযোগে ত্রুটি
     console.error('Database connection error:', error);
-    process.exit(1); // ত্রুটির কারণে অ্যাপ বন্ধ
+    // process.exit(1); // ত্রুটির কারণে অ্যাপ বন্ধ
   }
 }
 

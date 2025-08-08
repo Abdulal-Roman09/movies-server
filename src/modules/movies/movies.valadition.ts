@@ -20,6 +20,9 @@ export const movieSchema = z.object({
   reviews: z
     .array(reviewSchema)
     .min(1, { message: "At least one review is required" }),
-  isDelete: z.boolean(),
-  viewCount: z.number().min(0, { message: "View count must be at least 0" }),
+  isDelete: z.boolean().default(false),
+  viewCount: z
+    .number()
+    .min(0, { message: "View count must be at least 0" })
+    .default(0),
 });
