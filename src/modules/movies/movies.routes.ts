@@ -4,4 +4,8 @@ const router=express.Router()
 
 router.post('/',MoviceController.creatMovie)
 
+router.get('/',MoviceController.getAllMovies)
+
+router.get('/:id',MoviceController.getMovieById)
+
 export const MovieRoutes=router

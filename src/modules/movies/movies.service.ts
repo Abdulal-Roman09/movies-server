@@ -7,6 +7,16 @@ const crateMovie = async (payload: TMovie) => {
   return result;
 };
 
+const getAllMovies=async(payload:TMovie)=>{
+  const result=await Movie.find()
+}
+const getMovieById=async (id:string)=>{
+  const result =await Movie.findById(id)
+  return result 
+}
+
 export const MovieService = {
   crateMovie,
+  getAllMovies,
+  getMovieById
 };
