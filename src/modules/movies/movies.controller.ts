@@ -20,7 +20,7 @@ const createMovie = async (req: Request, res: Response) => {
   }
 };
 
-const getAllMovies = async (_req: Request, res: Response) => {
+const getAllMovies = async (req: Request, res: Response) => {
   try {
     const movies = await MovieService.getAllMovies();
     res.status(200).json({
