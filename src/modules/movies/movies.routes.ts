@@ -1,11 +1,11 @@
-import express  from "express"
-import { MoviceController } from "./movies.controller"
-const router=express.Router()
+import express from "express";
+import { MovieController } from "./movies.controller";
 
-router.post('/',MoviceController.creatMovie)
+const router = express.Router();
 
-router.get('/',MoviceController.getAllMovies)
+router.post("/", MovieController.createMovie);
+router.get("/", MovieController.getAllMovies);
+// router.get("/:id", MovieController.getMovieById);
+router.get("/:slug", MovieController.getMovieBySlug);
 
-router.get('/:id',MoviceController.getMovieById)
-
-export const MovieRoutes=router
+export const MovieRoutes = router;

@@ -1,35 +1,34 @@
-// movies.controller.ts
 import { Request, Response } from "express";
 import { movieSchema } from "./movies.valadition";
 import { MovieService } from "./movies.service";
 import { Movie } from "./movies.model";
-import { success } from "zod";
 
-const creatMovie = async (req: Request, res: Response) => {
+const createMovie = async (req: Request, res: Response) => {
   try {
     const moviesData = movieSchema.parse(req.body);
-    const result = await MovieService.crateMovie(moviesData);
+    const result = await MovieService.createMovie(moviesData);
     res.status(201).json({
       success: true,
+      message: "Movie created successfully",
       data: result,
     });
   } catch (error: any) {
     res.status(400).json({
       success: false,
-      message: error.message,
+      message: error instanceof Error ? error.message : "Validation failed",
     });
   }
 };
-const getAllMovies = async (req: Request, res: Response) => {
+
+const getAllMovies = async (_req: Request, res: Response) => {
   try {
-    const movies = await Movie.find();
+    const movies = await MovieService.getAllMovies();
     res.status(200).json({
       success: true,
-      message: " All movies Fetched Successfully",
+      message: "All movies fetched successfully",
       data: movies,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch movies",
@@ -37,10 +36,11 @@ const getAllMovies = async (req: Request, res: Response) => {
     });
   }
 };
-const getMovieById = async (req: Request, res: Response) => {
+
+const getMovieBySlug = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const movie = await MovieService.getMovieById(id);
+    const { slug } = req.params;
+    const movie = await MovieService.getMovieBySlug(slug);
 
     if (!movie) {
       return res.status(404).json({
@@ -55,7 +55,6 @@ const getMovieById = async (req: Request, res: Response) => {
       data: movie,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch movie",
@@ -64,8 +63,8 @@ const getMovieById = async (req: Request, res: Response) => {
   }
 };
 
-export const MoviceController = {
-  creatMovie,
+export const MovieController = {
+  createMovie,
   getAllMovies,
-  getMovieById,
+  getMovieBySlug,
 };
