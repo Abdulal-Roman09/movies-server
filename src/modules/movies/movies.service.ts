@@ -2,7 +2,12 @@ import { TMovie } from "./movies.interface";
 import { Movie } from "./movies.model";
 
 const createMovie = async (payload: TMovie) => {
-  const result = await Movie.create(payload);
+  // const result = await Movie.create(payload);
+  const result = new Movie(payload);
+  const slug = result.createSlug(payload);
+  result.slug = slug;
+  result.save();
+
   return result;
 };
 

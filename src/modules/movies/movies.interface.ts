@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 export type TReviews = {
   email: string;
   rating: number;
@@ -14,3 +16,8 @@ export type TMovie = {
   reviews: TReviews[];
   slug: string;
 };
+
+export type TMovieMethods={
+  createSlug(payload:TMovie):string
+}
+export type TMovieModel=Model<TMovie,Record<string,unknown>,TMovieMethods>
