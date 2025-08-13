@@ -13,16 +13,27 @@ const addReview = async (
   if (!movie) {
     throw new Error("Movie not found");
   }
-
-  const review = await Review.create({
-    movie: movie._id,
-    ...reviewData,
-  });
-  const reviewsCount = await Review.countDocuments({ movie: movie._id });
-
-  await Movie.updateOne({ slug }, { totalRating: reviewsCount }, );
-
-  return review;
+  try {
+    session.startTransaction();
+    const review = await Review.create(
+      [
+        {
+          movie: movie._id,
+          ...reviewData,
+        },
+      ],
+      { session }
+    );
+    const reviewsCount = await Review.countDocuments({ movie: movie._id });
+    await Movie.updateOne({ slug }, { totalRating: reviewsCount });
+    await session.commitTransaction();
+    return review[0];
+  } catch (error) {
+    console.log(error);
+    await session.abortTransaction();
+    throw error;
+  }
+  session.endSession();
 };
 
 export const ReviewServices = {
