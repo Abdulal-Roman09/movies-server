@@ -1,25 +1,19 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ReviewValidationSchema } from "./reviews.validation"; // Zod validation
 import { ReviewServices } from "./reviews.service";
+import { catchAsync } from "../../utils/catchAsync";
 
-const addReview = async (req: Request, res: Response) => {
-  try {
-    const { slug } = req.params;
-    const reviewData = req.body;
-    const result = await ReviewServices.addReview(slug, reviewData);
+const addReview = catchAsync(async (req: Request, res: Response,next:NextFunction) => {
+  const { slug } = req.params;
+  const reviewData = req.body;
+  const result = await ReviewServices.addReview(slug, reviewData);
 
-    res.status(201).json({
-      success: true,
-      message: "Review created successfully",
-      data: result,
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error instanceof Error ? error.message : "Validation failed",
-    });
-  }
-};
+  res.status(201).json({
+    success: true,
+    message: "Review created successfully",
+    data: result,
+  });
+});
 
 // const getAllReviews = async (_req: Request, res: Response) => {
 //   try {

@@ -5,16 +5,17 @@ import { Review } from "./reviews.model";
 const addReview = async (
   slug: string,
   reviewData: Partial<TReviews>
-): Promise<TReviews | any> => {
+): Promise<TReviews> => {
   const session = await Movie.startSession();
 
-  const movie = await Movie.findOne({ slug });
-
-  if (!movie) {
-    throw new Error("Movie not found");
-  }
   try {
+    const movie = await Movie.findOne({ slug }).session(session);
+    if (!movie) {
+      throw new Error("Movie not found");
+    }
+
     session.startTransaction();
+
     const review = await Review.create(
       [
         {
@@ -24,22 +25,22 @@ const addReview = async (
       ],
       { session }
     );
+
     const reviewsCount = await Review.countDocuments({ movie: movie._id });
-    await Movie.updateOne({ slug }, { totalRating: reviewsCount });
+    await Movie.updateOne({ slug }, { totalRating: reviewsCount }).session(
+      session
+    );
+
     await session.commitTransaction();
     return review[0];
   } catch (error) {
-    console.log(error);
     await session.abortTransaction();
     throw error;
+  } finally {
+    session.endSession();
   }
-  session.endSession();
 };
 
 export const ReviewServices = {
   addReview,
-  //   getAllReviews,
-  //   getReviewById,
-  //   updateReview,
-  //   deleteReview,
 };
