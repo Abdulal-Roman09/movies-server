@@ -12,19 +12,19 @@ const createMovie = async (payload: TMovie) => {
 };
 
 // Get all movies with optional search
-const getAllMovies = async (searchTerm?: string) => {
+const getAllMovies = async (payload: Record<string, unknown>) => {
+  let searchTerm = "";
+  if (payload?.searchTerm) {
+    searchTerm = payload.searchTerm as string;
+  }
   const searchableFields = ["title", "genre"];
 
-  let query = {};
-  if (searchTerm) {
-    query = {
-      $or: searchableFields.map((field) => ({
-        [field]: { $regex: searchTerm, $options: "i" },
-      })),
-    };
-  }
-
-  return await Movie.find(query);
+  let query = {
+    $or: searchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    })),
+  };
+  return query;
 };
 
 // Get a movie by its slug

@@ -22,9 +22,9 @@ const createMovie = async (req: Request, res: Response) => {
 
 const getAllMovies = async (req: Request, res: Response) => {
   try {
-    const searchTerm = req.query.searchTerm as string; // কুয়েরি থেকে নেওয়া
-    const movies = await MovieService.getAllMovies(searchTerm); // সার্ভিসে পাঠানো
 
+    const query = await MovieService.getAllMovies(req.query);
+    const movies=await Movie.find(query)
     res.status(200).json({
       success: true,
       message: "Movies fetched successfully",
