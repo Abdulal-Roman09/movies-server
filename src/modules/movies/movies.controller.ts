@@ -22,10 +22,12 @@ const createMovie = async (req: Request, res: Response) => {
 
 const getAllMovies = async (req: Request, res: Response) => {
   try {
-    const movies = await MovieService.getAllMovies();
+    const searchTerm = req.query.searchTerm as string; // কুয়েরি থেকে নেওয়া
+    const movies = await MovieService.getAllMovies(searchTerm); // সার্ভিসে পাঠানো
+
     res.status(200).json({
       success: true,
-      message: "All movies fetched successfully",
+      message: "Movies fetched successfully",
       data: movies,
     });
   } catch (error) {
@@ -36,6 +38,7 @@ const getAllMovies = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 const getMovieBySlug = async (req: Request, res: Response) => {
   try {
