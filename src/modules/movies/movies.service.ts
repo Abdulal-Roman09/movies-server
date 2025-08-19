@@ -24,7 +24,13 @@ const getAllMovies = async (payload: Record<string, unknown>) => {
       [field]: { $regex: searchTerm, $options: "i" },
     })),
   };
-  return query;
+  // filtering part
+  const queryObj={...payload}
+const excludeFields=["searchTerm"]
+excludeFields.forEach((e)=>delete queryObj[e])
+const result=await Movie.find(queryObj)
+const finalObj={...queryObj,...(searchTerm?query:)}   
+  return finalObj;
 };
 
 // Get a movie by its slug
